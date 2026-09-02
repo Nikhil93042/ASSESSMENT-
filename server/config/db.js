@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 dotenv.config();
 
@@ -18,7 +17,7 @@ export const connectDB = async () => {
   try {
     console.log('[DB] Establishing cached MongoDB connection...');
     const conn = await mongoose.connect(primaryURI, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
       maxPoolSize: 10, // Maintain up to 10 socket connections
     });
     isConnected = true;
@@ -29,6 +28,7 @@ export const connectDB = async () => {
     
     try {
       if (!mongoMemoryInstance) {
+        const { MongoMemoryServer } = await import('mongodb-memory-server');
         mongoMemoryInstance = await MongoMemoryServer.create();
       }
       const fallbackURI = mongoMemoryInstance.getUri();
